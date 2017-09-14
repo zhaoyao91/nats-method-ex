@@ -1,0 +1,11 @@
+{
+  "name": "nats-method-ex",
+  "version": "1.0.0",
+  "description": "make nats-method easier",
+  "main": "index.js",
+  "author": "zhaoyao91 <zhaoyao91@163.com>",
+  "license": "MIT",
+  "dependencies": {
+    "simple-json-logger": "^1.2.0"
+  }
+}
