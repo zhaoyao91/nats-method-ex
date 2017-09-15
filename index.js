@@ -1,48 +1,63 @@
 const logger = require('simple-json-logger')
+const connectMethod = require('nats-method')
+const uuid = require('uuid').v4
 
-module.exports = function (natsMethod) {
-  return {
-    define (name, handler) {
-      natsMethod.define(name, handleError(processInput(handler)))
-    },
+const {ok, fail, adaptOutput} = require('./lib/output')
 
-    async call (name, input, timeout) {
-      input = stringifyJSON(input)
-      let output = await natsMethod.call(name, input, timeout)
-      output = parseJSON(output)
+const connectMethodEx = function (...args) {
+  const method = connectMethod(...args)
+  const {define: originalDefine, call: originalCall, callAndForget: originalCallAndForget} = method
+
+  // handler: func(data, input, subject) =>
+  method.define = function (name, handler) {
+    const wrapperHandler = async (msg, subject) => {
+      const input = JSON.parse(msg)
+      const {requestId, data} = input
+      let output
+      try {
+        output = await handler(data, input, subject)
+      }
+      catch (err) {
+        logger.error(err, 'internal method error')
+        output = fail('internal-method-error', err.toString())
+      }
+      output = adaptOutput(output)
+      output = {requestId, ...output}
+      output = JSON.stringify(output)
       return output
     }
-  }
-}
 
-function processInput (handler) {
-  return async (input, subject) => {
-    input = parseJSON(input)
-    let output = await handler(input, subject)
-    output = stringifyJSON(output)
+    return originalDefine(name, wrapperHandler)
+  }
+
+  method.call = async function (name, data, options) {
+    options = options || {}
+    const {timeout} = options
+
+    const input = buildInput(data)
+    let output = await originalCall(name, input, timeout)
+    output = JSON.parse(output)
     return output
   }
-}
 
-function handleError (handler) {
-  return async (message, subject) => {
-    try {
-      return await handler(message, subject)
-    }
-    catch (err) {
-      logger.error(err, 'internal method error', {message, subject})
-      return JSON.stringify({ok: false, error: 'internal-method-error'})
-    }
+  method.callAndForget = function (name, data, options) {
+    const input = buildInput(data)
+    originalCall(name, input)
   }
+
+  return method
 }
 
-function stringifyJSON (string) {
-  // JSON.stringify will return undefined if string is undefined
-  return JSON.stringify(string)
-}
+module.exports = connectMethodEx
 
-function parseJSON (json) {
-  if (json === undefined || json === '') return undefined
-  else return JSON.parse(json)
-}
+module.exports.ok = ok
+module.exports.fail = fail
 
+function buildInput (data) {
+  let input = {
+    requestId: uuid(),
+    data
+  }
+  input = JSON.stringify(input)
+  return input
+}
