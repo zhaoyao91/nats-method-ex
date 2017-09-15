@@ -7,17 +7,20 @@ module.exports = function (natsMethod) {
     },
 
     async call (name, input, timeout) {
-      const output = await natsMethod.call(name, input === undefined ? undefined : JSON.stringify(input), timeout)
-      return !!output ? JSON.parse(output) : undefined
+      input = stringifyJSON(input)
+      let output = await natsMethod.call(name, input, timeout)
+      output = parseJSON(output)
+      return output
     }
   }
 }
 
 function processInput (handler) {
   return async (input, subject) => {
-    input = !!input ? JSON.parse(input) : undefined
-    const output = await handler(input, subject)
-    return output === undefined ? undefined : JSON.stringify(output)
+    input = parseJSON(input)
+    let output = await handler(input, subject)
+    output = stringifyJSON(output)
+    return output
   }
 }
 
@@ -28,7 +31,18 @@ function handleError (handler) {
     }
     catch (err) {
       logger.error(err, 'internal method error', {message, subject})
-      return JSON.stringify({ok: false, error: 'internal method error'})
+      return JSON.stringify({ok: false, error: 'internal-method-error'})
     }
   }
 }
+
+function stringifyJSON (string) {
+  // JSON.stringify will return undefined if string is undefined
+  return JSON.stringify(string)
+}
+
+function parseJSON (json) {
+  if (json === undefined || json === '') return undefined
+  else return JSON.parse(json)
+}
+

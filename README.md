@@ -5,7 +5,7 @@ Make nats-method easier.
 ## Features
 
 - Messages are delivered in JSON format.
-- Default method error handler are enhanced.
+- Default method error handler is enforced.
 
 ## Usage
 
