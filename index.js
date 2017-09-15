@@ -11,7 +11,18 @@ const connectMethodEx = function (...args) {
   // handler: func(data, input, subject) =>
   method.define = function (name, handler) {
     const wrapperHandler = async (msg, subject) => {
-      const input = JSON.parse(msg)
+      let input
+      try {
+        input = JSON.parse(msg)
+      }
+      catch (err) {
+        return JSON.stringify(fail('invalid-input', 'input must be a JSON string', {input: msg}))
+      }
+
+      if (!(typeof input === 'object' && input !== null && !Array.isArray(input))) {
+        return JSON.stringify(fail('invalid-input', 'input must be parsed as an object', {input: msg}))
+      }
+
       const {requestId, data} = input
       let output
       try {
