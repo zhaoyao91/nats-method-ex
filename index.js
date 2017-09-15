@@ -52,7 +52,7 @@ const connectMethodEx = function (...args) {
   method.callAndForget = function (name, data, options = {}) {
     const {requestId} = options
     const input = buildInput(data, requestId)
-    originalCall(name, input)
+    originalCallAndForget(name, input)
   }
 
   return method
