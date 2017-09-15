@@ -97,9 +97,13 @@ Please check their docs for more detailed apis.
 > `async func(name, data, options) => response`
 
 - `options` is optional, which may contains:
-  - timeout
+  - timeout: optional
+  - requestId: optional
 - `response`: see [protocol response](docs/protocol.md#response)
   
 #### methodEx.callAndForget
 
 > `func(name, data, options)`
+
+- `options` is optional, which may contains:
+  - requestId: optional

@@ -30,18 +30,17 @@ const connectMethodEx = function (...args) {
     return originalDefine(name, wrapperHandler)
   }
 
-  method.call = async function (name, data, options) {
-    options = options || {}
-    const {timeout} = options
-
-    const input = buildInput(data)
+  method.call = async function (name, data, options = {}) {
+    const {timeout, requestId} = options
+    const input = buildInput(data, requestId)
     let output = await originalCall(name, input, timeout)
     output = JSON.parse(output)
     return output
   }
 
-  method.callAndForget = function (name, data, options) {
-    const input = buildInput(data)
+  method.callAndForget = function (name, data, options = {}) {
+    const {requestId} = options
+    const input = buildInput(data, requestId)
     originalCall(name, input)
   }
 
@@ -53,9 +52,9 @@ module.exports = connectMethodEx
 module.exports.ok = ok
 module.exports.fail = fail
 
-function buildInput (data) {
+function buildInput (data, requestId) {
   let input = {
-    requestId: uuid(),
+    requestId: requestId || uuid(),
     data
   }
   input = JSON.stringify(input)
