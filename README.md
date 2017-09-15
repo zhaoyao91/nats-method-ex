@@ -82,7 +82,7 @@ Please check their docs for more detailed apis.
 
 - `options` could be:
   - an nats url string for single server, such as `nats://localhost:4222`
-  - an nats url string for cluster servers, such as `nats://192.168.0.1:4222,nats:192.168.0.2:4222`
+  - an nats url string for cluster servers, such as `nats://192.168.0.1:4222,nats://192.168.0.2:4222`
   - [nats connect options](https://github.com/nats-io/node-nats)
   
 #### methodEx.define
