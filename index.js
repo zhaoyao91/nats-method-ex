@@ -16,10 +16,12 @@ const connectMethodEx = function (...args) {
         input = JSON.parse(msg)
       }
       catch (err) {
+        logger.error(err, 'input must be a JSON string', {input: msg})
         return JSON.stringify(fail('invalid-input', 'input must be a JSON string', {input: msg}))
       }
 
       if (!(typeof input === 'object' && input !== null && !Array.isArray(input))) {
+        logger.error('input must be parsed as an object', {input: msg})
         return JSON.stringify(fail('invalid-input', 'input must be parsed as an object', {input: msg}))
       }
 

@@ -1,6 +1,6 @@
 {
   "name": "nats-method-ex",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "Extends nats method with enforced protocol.",
   "main": "index.js",
   "author": "zhaoyao91 <zhaoyao91@163.com>",
