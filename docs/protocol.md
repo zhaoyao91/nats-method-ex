@@ -4,48 +4,48 @@
 
 1
 
-### Definition
-
-#### Format
+## Format
 
 JSON
 
-#### Request
+## Schemas
 
-```ecmascript 6
+### Request
+
+```
 {
-  "requestId": String,
-  "data": Any,
+  requestId: String,
+  data?: Any,
 }
 ```
 
-#### Response
+### Response
 
 General:
 
-```ecmascript 6
+```
 {
-  "requestId": String,
-  "ok": Boolean,
+  requestId: String,
+  ok: Boolean,
 }
 ```
 
 Success:
 
-```ecmascript 6
+```
 {
-  "ok": true,
-  "data": Any,
+  ok: true,
+  data?: Any,
 }
 ```
 
 Failed:
 
-```ecmascript 6
+```
 {
-  "ok": false,
-  "error": String, // error code, such as "invalid-args"
-  "message": String, // describe what happened or error reason in human words
-  "details": Object,
+  ok: false,
+  error?: String, // error code, such as "invalid-args"
+  message?: String, // describe what happened or error reason in human words
+  details?: Object,
 }
 ```
