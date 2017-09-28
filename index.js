@@ -31,7 +31,7 @@ const connectMethodEx = function (...args) {
         output = await handler(data, input, subject)
       }
       catch (err) {
-        logger.error(err, 'internal method error')
+        logger.error(err, 'internal method error', {subject, input})
         output = fail('internal-method-error', err.toString())
       }
       output = adaptOutput(output)
